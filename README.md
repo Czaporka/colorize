@@ -20,7 +20,13 @@ make colorize-numerals
 mkdir -p ~/.local/bin
 cp colorize-numerals ~/.local/bin
 ```
-Make sure `~/.local/bin` is on your `PATH`:
+Alternatively, download a pre-built executable (compiled on Debian):
+```bash
+mkdir -p ~/.local/bin
+curl -Lo ~/.local/bin/colorize-numerals https://github.com/Czaporka/colorize-numerals/releases/download/v1.0.0/colorize-numerals
+chmod +x ~/.local/bin/colorize-numerals
+```
+Make sure `~/.local/bin` is on your `PATH`, e.g.:
 ```bash
 echo 'export PATH=${PATH}:~/.local/bin' >> ~/.bashrc
 ```
