@@ -12,9 +12,9 @@ jobs:
         steps:
             - uses: actions/checkout@v2
             - name: make
-              run: make ${{ app_name }}
+              run: make ${{ env.app_name }}
             - name: upload artifact
               uses: actions/upload-artifact@v1
               with:
-                  name: ${{ app_name }}
-                  path: ${{ app_name }}
+                  name: ${{ env.app_name }}
+                  path: ${{ env.app_name }}
