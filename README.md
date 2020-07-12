@@ -1,3 +1,4 @@
+![](https://github.com/Czaporka/colorize-numerals/workflows/build.yml/badge.svg)
 # colorize-numerals
 
 ## Description
