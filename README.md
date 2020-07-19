@@ -2,10 +2,10 @@
 # colorize-numerals
 
 ## Description
-`colorize-numerals` is a simple utility that employs color-coding in order to aid humans in parsing console output that contains a lot of numbers.  
+`colorize-numerals` is a simple utility that employs color-coding in order to aid humans in parsing console output that contains a lot of numbers.
 By applying the same distinct color to every occurrence of a number, hopefully it should make it easier to figure out what is what.
 
-For example,  
+For example,
 It is difficult to understand what is happening here:
 ![](docs/without.png)
 
@@ -16,14 +16,11 @@ This looks much better:
 ```bash
 git clone https://github.com/Czaporka/colorize-numerals.git
 cd colorize-numerals
-make colorize-numerals
-mkdir -p ~/.local/bin
-cp colorize-numerals ~/.local/bin
+make install
 ```
 Alternatively, download a pre-built executable (compiled on Debian):
 ```bash
-mkdir -p ~/.local/bin
-curl -Lo ~/.local/bin/colorize-numerals https://github.com/Czaporka/colorize-numerals/releases/download/v1.0.0/colorize-numerals
+curl --create-dirs -Lo ~/.local/bin/colorize-numerals https://github.com/Czaporka/colorize-numerals/releases/download/v1.0.1/colorize-numerals
 chmod +x ~/.local/bin/colorize-numerals
 ```
 Make sure `~/.local/bin` is on your `PATH`, e.g.:

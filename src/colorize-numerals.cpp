@@ -6,7 +6,7 @@
 #include "colorize-numerals.hpp"
 
 
-const int get_next_color()
+int get_next_color()
 {
     static std::array<int, COLORS_SIZE>::const_iterator it = COLORS.begin();
 
@@ -15,7 +15,8 @@ const int get_next_color()
     return *it++;
 }
 
-const int get_color(std::string s)
+
+int get_color(std::string s)
 {
     static std::map<std::string, int> m;  // token-to-color mapping
 
@@ -30,17 +31,17 @@ const int get_color(std::string s)
 }
 
 
-const void colorize(std::string s)
+void colorize(std::string s)
 {
     const static std::regex regex("\\b(?:0[xo])?[0-9.a-f]+\\b", std::regex::icase);
-    const static std::sregex_token_iterator END;
+    const static std::sregex_token_iterator end;
 
     std::sregex_token_iterator it(s.begin(), s.end(), regex, {-1, 0});
-    while (it != END) {
-        if (it == END)
+    while (it != end) {
+        if (it == end)
             break;
         std::cout << *it++;
-        if (it == END)
+        if (it == end)
             break;
         std::cout << "\033[" << get_color(*it) << "m" << *it++ << "\033[0m";
     }
@@ -48,7 +49,7 @@ const void colorize(std::string s)
 }
 
 
-int main(int argc, char *argv[])
+int main()
 {
     while (!std::cin.eof()) {
         std::string line;
