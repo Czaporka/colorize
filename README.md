@@ -7,10 +7,10 @@ By applying the same distinct color to every occurrence of a number, hopefully i
 
 For example,
 It is difficult to understand what is happening here:
-![](docs/without.png)
+![](docs/without.jpeg)
 
 This looks much better:
-![](docs/with.png)
+![](docs/with.jpeg)
 
 ## How to install?
 ```bash
