@@ -1,6 +1,6 @@
 PREFIX ?= ~/.local
 
-APP_NAME := colorize-numerals
+APP_NAME := colorize
 CXXFLAGS := -Wall -Wextra -O3
 
 
