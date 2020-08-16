@@ -23,4 +23,4 @@ const static std::array<int, COLORS_SIZE> COLORS = {
 };
 
 const static std::regex REGEX_NUM("\\b(?:0[xo])?[0-9.a-f]+\\b", std::regex::icase);
-const static std::regex REGEX_ALL("\\b[0-9.a-zA-Z]+\\b", std::regex::icase);
+const static std::regex REGEX_ALL("\\b[0-9a-zA-Z._]+\\b", std::regex::icase);

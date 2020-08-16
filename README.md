@@ -16,7 +16,7 @@ make install
 ```
 Alternatively, download a pre-built executable (compiled on Debian):
 ```bash
-curl --create-dirs -Lo ~/.local/bin/colorize https://github.com/Czaporka/colorize/releases/download/v1.1.0/colorize
+curl --create-dirs -fLo ~/.local/bin/colorize https://github.com/Czaporka/colorize/releases/download/v1.1.1/colorize
 chmod +x ~/.local/bin/colorize
 ```
 Make sure `~/.local/bin` is on your `PATH`, e.g.:
