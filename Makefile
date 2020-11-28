@@ -2,6 +2,7 @@ PREFIX ?= ~/.local
 
 APP_NAME := colorize
 CXXFLAGS := -Wall -Wextra -O3
+INSTALLDIR := ${DESTDIR}${PREFIX}/bin/
 
 
 .PHONY: all
@@ -9,11 +10,12 @@ all: target/${APP_NAME}
 
 .PHONY: install
 install: target/${APP_NAME}
-	install -m 755 -D $^ ${DESTDIR}${PREFIX}/bin/
+	mkdir -p ${INSTALLDIR}
+	install -m 755 -D $^ ${INSTALLDIR}
 
 .PHONY: uninstall
 uninstall:
-	rm -rf ${DESTDIR}${PREFIX}/bin/${APP_NAME}
+	rm -rf ${INSTALLDIR}${APP_NAME}
 
 .PHONY: clean
 clean:
