@@ -6,28 +6,10 @@
 #include "colorize.hpp"
 
 
-int get_next_color()
-{
-    static std::array<int, COLORS_SIZE>::const_iterator it = COLORS.begin();
-
-    if (it == COLORS.end())
-        it = COLORS.begin();
-    return *it++;
-}
-
-
 int get_color(const std::string& s)
 {
-    static std::map<std::string, int> m;  // token-to-color mapping
-
-    auto it = m.find(s);
-    if (it != m.end())
-        return it->second;
-    else {
-        int color = get_next_color();
-        m.emplace(s, color);
-        return color;
-    }
+    int hash = std::hash<std::string>{}(s);
+    return COLORS[hash % COLORS_SIZE];
 }
 
 
