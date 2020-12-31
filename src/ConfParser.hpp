@@ -1,34 +1,41 @@
-// #include <algorithm>
-#include <fstream>
+#ifndef CONFPARSER_H
+#define CONFPARSER_H
+
 #include <map>
-// #include <list>
-// #include <string>
 
 
-class Foo
-{
-     X x_;  // private member
-public:
-          X & x()       { return x_; }  // "setter"
-    const X & x() const { return x_; }  // "getter"
-};
-
-class Config
-{
-private:
+const static char COMMENT_CHARACTER = '#';
+const static std::string CONFIG_FILENAME = ".colorize.conf";
 
 
-public:
+// class Foo
+// {
+//      X x_;  // private member
+// public:
+//           X & x()       { return x_; }  // "setter"
+//     const X & x() const { return x_; }  // "getter"
+// };
 
-};
+// class Config
+// {
+// private:
+
+
+// public:
+
+// };
 
 class ConfParser
 {
 private:
-    std::map<std::string, std::string> m;
+    std::map<std::string, std::string> _m;
+
+    std::string _get_home_dir(void);
+    std::string _get_conf_file_path(void);
 
 public:
-    ArgumentParser(int &argc, char **argv);
-    bool pop_option(const std::string &option);
-    std::list<std::string>& get_tokens();
+    std::map<std::string, std::string> parse_config(std::string);  // TODO: return a Config, not map
+    std::map<std::string, std::string> parse_config();
 };
+
+#endif
