@@ -60,7 +60,7 @@ build/%.o: src/%.cpp src/%.hpp
 # ======================================================
 # | Test executable
 # ------------------------------------------------------
-target/${APP_NAME}-test: ${TEST_OBJECTS} ${TEST_LIB_OBJECTS} $(filter-out build/${APP_NAME}.o, ${OBJECTS})
+target/${APP_NAME}-test: ${TEST_OBJECTS} ${TEST_LIB_OBJECTS} $(filter-out build/${APP_NAME}.o, ${OBJECTS})  # TODO: add HEADERS here
 	@mkdir -p ${@D}
 	${CXX} ${CXXFLAGS} ${CPPFLAGS} -o $@ $^
 

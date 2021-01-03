@@ -1,24 +1,157 @@
+#include <iomanip>
+#include <iostream>
+#include <string.h>
+
 #include "ArgumentParser.hpp"
 
 
-ArgumentParser::ArgumentParser(int &argc, char **argv)
+const std::string upper(const std::string& s)
 {
-    for (int i = 1; i < argc; ++i)
-        this->tokens.push_back(std::string(argv[i]));
+    std::string retval;
+    for (char c : s)
+        retval += toupper(c);
+    return retval;
 }
 
 
-std::list<std::string>& ArgumentParser::get_tokens()
+ArgumentParser::ArgumentParser(int argc, char** argv) : _argc(argc), _argv(argv)
 {
-    return this->tokens;
+    option opt = {"help", no_argument, NULL, 'h'};
+    _long_options.push_back(opt);
+    _arguments.push_back({opt, "show this help message and exit", ""});
 }
 
 
-bool ArgumentParser::pop_option(const std::string &option)
+void ArgumentParser::print_help(void)
 {
-    auto it = std::find(this->tokens.begin(), this->tokens.end(), option);
-    if (it == this->tokens.end())
-        return false;
-    this->tokens.erase(it);
-    return true;
+    print_usage();
+
+    std::cerr << _description << "\n";
+
+    // print examples
+    for (auto& example : _examples)
+        std::cerr << "Example: " << example << "\n";
+
+    // get the largest option name length
+    int max = 0;
+    for (auto& arg: _arguments) {
+        int size = strlen(arg.get_option().name);
+
+        if (arg.get_option().has_arg)
+            size = (size << 1) + 1;  // for options with args we append "=REPEATED_NAME"
+
+        if (size > max)
+            max = size;
+    }
+
+    std::cout << "\nOptional arguments:\n";
+    for (Arg& arg : _arguments) {
+        std::string long_ = arg.get_option().name + (arg.get_option().has_arg ? ('=' + arg.get_metavar()) : "");
+        std::cout
+            << "  -" << (char)arg.get_option().val
+            << ", --" << std::left << std::setw(max) << long_
+            << ' ' << arg.get_help() << '\n';
+    }
+}
+
+
+void ArgumentParser::print_usage(void)
+{
+    std::cout << "Usage: " << _argv[0];
+    for (auto& arg : _arguments) {
+        std::cout << " [--" << arg.get_option().name << "|-" << (char)arg.get_option().val;
+        if (arg.get_option().has_arg)
+            std::cout << ' ' << arg.get_metavar();
+        std::cout << ']';
+    }
+    std::cout << '\n';
+}
+
+
+void ArgumentParser::add_argument(
+    const char* long_, const char short_, const int argument_required, const std::string& help)
+{
+    std::string metavar = argument_required ? upper(long_) : "";
+    add_argument(long_, short_, argument_required, help, metavar);
+}
+
+
+void ArgumentParser::add_argument(
+    const char* long_, const char short_, const int argument_required, const std::string& help, const std::string& metavar)
+{
+    for (Arg& arg : _arguments)
+        if (arg.get_option().name == long_ || arg.get_option().val == short_)
+            throw ArgumentError(std::string("argument --") + arg.get_option().name
+                                + ": conflicting with option --" + long_);
+    option opt = {long_, argument_required, NULL, short_};
+    _long_options.push_back(opt);
+    _arguments.push_back({opt, help, metavar});
+}
+
+
+void ArgumentParser::add_description(const std::string& description)
+{
+    _description = description;
+}
+
+
+void ArgumentParser::add_example(const std::string& example)
+{
+    _examples.push_back(example);
+}
+
+
+std::string ArgumentParser::_get_short_options(void)
+{
+    std::string short_options;
+    for (const Arg& arg : _arguments) {
+        if (arg.get_option().val)
+            short_options.push_back(arg.get_option().val);
+        if (arg.get_option().has_arg)
+            short_options.push_back(':');
+    }
+    return short_options;
+}
+
+
+Args ArgumentParser::parse_args()
+{
+    opterr = 0;
+
+    std::string short_options = _get_short_options();
+
+    _long_options.push_back({0, 0, 0, 0});  // push the terminating entry
+    const struct option* long_options = &_long_options[0];
+
+    Args args;
+
+    while (true) {
+        int option_index = 0;
+        int c = getopt_long(_argc, _argv, short_options.c_str(), long_options, &option_index);
+        if (c == -1)
+            break;
+        switch (c) {
+        case 'h':
+            print_help();
+            std::exit(EXIT_SUCCESS);
+            break;
+        case '?':
+            if (short_options.find(optopt) != std::string::npos)
+                throw ArgumentError(std::string("option requires an argument -- '") + _argv[optind-1] + "'");
+            else
+                throw ArgumentError(std::string("unrecognized option: '") + _argv[optind-1] + "'");
+            break;
+        default:
+            if (optarg == NULL)
+                ++args.flags[std::string(1, c)];
+            else
+                args.options.emplace(std::string(1, c), optarg);
+            break;
+        }
+    }
+    if (optind < _argc) {
+        while (optind < _argc)
+            args.positionals.push_back(_argv[optind++]);
+    }
+    return args;
 }
