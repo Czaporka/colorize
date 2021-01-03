@@ -1,5 +1,10 @@
+#ifndef COLORIZE_H
+#define COLORIZE_H
+
 #include <array>
 #include <regex>
+
+// TODO: move all of this stuff to Config?
 
 #define COLORS_SIZE 12
 
@@ -24,3 +29,5 @@ const static std::array<int, COLORS_SIZE> COLORS = {
 
 const static std::regex REGEX_NUM("\\b(?:0[xo])?[0-9.a-f]+\\b", std::regex::icase);
 const static std::regex REGEX_ALL("\\b[0-9a-zA-Z._]+\\b", std::regex::icase);
+
+#endif

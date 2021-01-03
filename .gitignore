@@ -1,2 +1,5 @@
 .vscode/
 target/
+*.xcf
+test/lib/
+build/
