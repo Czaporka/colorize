@@ -27,7 +27,7 @@ echo 'export PATH=${PATH}:~/.local/bin' >> ~/.bashrc
 
 ## Usage
 ```
-Usage: colorize [--help|-h] [--all|-a] [--cycle|-c] [--salt|-s SALT]
+Usage: colorize [--help|-h] [--all|-a] [--cycle|-c] [--regex|-r REGEX] [--salt|-s SALT]
 
 Colorize text (by default just numerals).
 
@@ -35,11 +35,12 @@ Example: df | colorize
 Example: colorize -a < file.txt
 
 Optional arguments:
-  -h, --help      show this help message and exit
-  -a, --all       colorize all words, not just numerals
-  -c, --cycle     cycle through the list of colors rather than pick the color
-                  based on the token's hash; this option makes
-                  token-to-color mapping inconsistent across
-                  executions and is probably not useful at all
-  -s, --salt=SALT append a salt to every token before hashing, effectively shuffling the colors
+  -h, --help        show this help message and exit
+  -a, --all         colorize all words, not just numerals
+  -c, --cycle       cycle through the list of colors rather than pick the color
+                    based on the token's hash; this option makes
+                    token-to-color mapping inconsistent across
+                    executions and is probably not useful at all
+  -r, --regex=REGEX use an arbitrary REGEX for finding the tokens
+  -s, --salt=SALT   append a salt to every token before hashing, effectively shuffling the colors
 ```
