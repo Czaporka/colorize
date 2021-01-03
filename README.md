@@ -3,7 +3,7 @@
 # colorize
 
 ## Description
-`colorize` is a simple utility that employs color-coding in order to aid humans in parsing console output that contains a lot of similarly-looking words, especially numerals.  
+`colorize` is a simple utility that employs color-coding in order to aid humans in parsing console output that contains a lot of similarly-looking words, especially numerals.
 
 ## Examples
 ![](docs/examples.jpeg)
@@ -14,9 +14,9 @@ git clone https://github.com/Czaporka/colorize.git
 cd colorize
 make install
 ```
-Alternatively, download a pre-built executable (compiled on Debian):
+Alternatively, download a pre-built executable (compiled on Ubuntu):
 ```bash
-curl --create-dirs -fLo ~/.local/bin/colorize https://github.com/Czaporka/colorize/releases/download/v1.1.1/colorize
+curl --create-dirs -fLo ~/.local/bin/colorize https://github.com/Czaporka/colorize/releases/download/v1.2.0/colorize
 chmod +x ~/.local/bin/colorize
 ```
 Make sure `~/.local/bin` is on your `PATH`, e.g.:
@@ -27,11 +27,19 @@ echo 'export PATH=${PATH}:~/.local/bin' >> ~/.bashrc
 
 ## Usage
 ```
-Usage: colorize [-a | -h]
+Usage: colorize [--help|-h] [--all|-a] [--cycle|-c] [--salt|-s SALT]
+
 Colorize text (by default just numerals).
+
 Example: df | colorize
 Example: colorize -a < file.txt
-Options:
-  -a, --all   : colorize all words, not just numerals
-  -h, --help  : display this help message and exit
+
+Optional arguments:
+  -h, --help      show this help message and exit
+  -a, --all       colorize all words, not just numerals
+  -c, --cycle     cycle through the list of colors rather than pick the color
+                  based on the token's hash; this option makes
+                  token-to-color mapping inconsistent across
+                  executions and is probably not useful at all
+  -s, --salt=SALT append a salt to every token before hashing, effectively shuffling the colors
 ```
