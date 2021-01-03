@@ -33,7 +33,7 @@ int get_color_cycle(const std::string& s)
 
 int get_color_hash(const std::string& s)
 {
-    int hash = std::hash<std::string>{}(s);
+    size_t hash = std::hash<std::string>{}(s);
     return COLORS[hash % COLORS_SIZE];
 }
 
@@ -62,7 +62,10 @@ int main(int argc, char **argv)
     parser.add_example("df | " + std::string(argv[0]));
     parser.add_example("colorize -a < file.txt");
     parser.add_argument("all", 'a', no_argument, "colorize all words, not just numerals");
-    parser.add_argument("cycle", 'c', no_argument, "cycle through the list of colors rather than pick the color based on the string's hash; this option makes the token-to-color mapping inconsistent across executions, but is useful when numbers in the input only span a narrow range");
+    parser.add_argument("cycle", 'c', no_argument, "cycle through the list of colors rather than pick the color based "
+                                                   "on the string's hash; this option makes the token-to-color mapping "
+                                                   "inconsistent across executions, but is useful when numbers in the "
+                                                   "input only span a narrow range");
     Args args = parser.parse_args();
 
     const static std::regex& regex = (args.flags["a"])
