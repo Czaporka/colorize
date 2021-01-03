@@ -13,7 +13,8 @@ const std::string upper(const std::string& s);
 class ArgumentError : public std::runtime_error
 {
 public:
-    ArgumentError(const std::string what) : std::runtime_error(what) {}
+    ArgumentError(const std::string what)
+        : std::runtime_error(what) { }
 };
 
 
@@ -25,7 +26,7 @@ private:
     const std::string help;
 
 public:
-    Arg(option& option_, std::string help, std::string metavar)
+    Arg(option& option_, const std::string& help, const std::string& metavar)
         : option_(option_),
           metavar(metavar),
           help(help) { }
@@ -65,7 +66,7 @@ private:
 public:
     ArgumentParser(int argc, char** argv);
     void print_help(void);
-    void print_usage(void);
+    void print_usage(std::ostream&);
     void add_argument(const char* long_, const char short_, const int argument_required, const std::string& help);
     void add_argument(const char* long_, const char short_, const int argument_required, const std::string& help, const std::string& metavar);
     void add_description(const std::string& description);

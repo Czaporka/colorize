@@ -25,13 +25,13 @@ ArgumentParser::ArgumentParser(int argc, char** argv) : _argc(argc), _argv(argv)
 
 void ArgumentParser::print_help(void)
 {
-    print_usage();
+    print_usage(std::cout);
 
-    std::cerr << '\n' << _description << "\n\n";
+    std::cout << '\n' << _description << "\n\n";
 
     // print examples
     for (auto& example : _examples)
-        std::cerr << "Example: " << example << "\n";
+        std::cout << "Example: " << example << "\n";
 
     // get the largest option name length
     int max = 0;
@@ -86,16 +86,16 @@ const std::string ArgumentParser::_get_wrapped_help(const std::string& help, int
 }
 
 
-void ArgumentParser::print_usage(void)
+void ArgumentParser::print_usage(std::ostream& stream)
 {
-    std::cout << "Usage: " << _argv[0];
+    stream << "Usage: " << _argv[0];
     for (auto& arg : _arguments) {
-        std::cout << " [--" << arg.get_option().name << "|-" << (char)arg.get_option().val;
+        stream << " [--" << arg.get_option().name << "|-" << (char)arg.get_option().val;
         if (arg.get_option().has_arg)
-            std::cout << ' ' << arg.get_metavar();
-        std::cout << ']';
+            stream << ' ' << arg.get_metavar();
+        stream << ']';
     }
-    std::cout << '\n';
+    stream << '\n';
 }
 
 
@@ -171,7 +171,9 @@ Args ArgumentParser::parse_args()
                 ? std::string("option requires an argument -- '") + _argv[optind-1] + "'"
                 : std::string("unrecognized option: '") + _argv[optind-1] + "'";
             // throw ArgumentError(msg);
-            std::cout << _argv[0] << ": error: " << msg << "\n";
+            std::cerr << _argv[0] << ": error: " << msg << "\n";
+            print_usage(std::cerr);
+            std::cerr << "Try '" << _argv[0] << " --help' for more information.\n";
             std::exit(EXIT_FAILURE);
             break;
         }

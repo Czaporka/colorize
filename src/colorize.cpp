@@ -63,7 +63,7 @@ int main(int argc, char **argv)
     parser.add_example(std::string(argv[0]) + " -a < file.txt");
     parser.add_argument("all", 'a', no_argument, "colorize all words, not just numerals");
     parser.add_argument("cycle", 'c', no_argument,
-                        "cycle through the list of colors rather than pick the color based on the string's hash; "
+                        "cycle through the list of colors rather than pick the color based on the token's hash; "
                         "this option makes token-to-color mapping inconsistent across executions and is probably not useful at all");
     parser.add_argument("salt", 's', required_argument,
                         "append a salt to every token before hashing, effectively shuffling the colors");
