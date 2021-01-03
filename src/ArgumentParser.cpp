@@ -166,17 +166,20 @@ Args ArgumentParser::parse_args()
             print_help();
             std::exit(EXIT_SUCCESS);
             break;
-        case '?':
-            if (short_options.find(optopt) != std::string::npos)
-                throw ArgumentError(std::string("option requires an argument -- '") + _argv[optind-1] + "'");
-            else
-                throw ArgumentError(std::string("unrecognized option: '") + _argv[optind-1] + "'");
+        case '?': {
+            std::string msg = (short_options.find(optopt) != std::string::npos)
+                ? std::string("option requires an argument -- '") + _argv[optind-1] + "'"
+                : std::string("unrecognized option: '") + _argv[optind-1] + "'";
+            // throw ArgumentError(msg);
+            std::cout << _argv[0] << ": error: " << msg << "\n";
+            std::exit(EXIT_FAILURE);
             break;
+        }
         default:
             if (optarg == NULL)
-                ++args.flags[std::string(1, c)];
+                ++args.flags[c];
             else
-                args.options.emplace(std::string(1, c), optarg);
+                args.options.emplace(c, optarg);
             break;
         }
     }

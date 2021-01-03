@@ -38,8 +38,12 @@ public:
 
 struct Args
 {
-    std::map<std::string, int> flags;  // flag name -> number of occurrences
-    std::multimap<std::string, std::string> options;
+    // flag short name -> number of occurrences
+    std::map<char, int> flags;
+
+    // this could be a multimap if we want to handle situations like `grep -e ... -e ...`
+    std::map<char, std::string> options;
+
     std::vector<std::string> positionals;
 };
 
