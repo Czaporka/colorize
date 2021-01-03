@@ -1,5 +1,6 @@
 #include <iomanip>
 #include <iostream>
+#include <sstream>
 #include <string.h>
 
 #include "ArgumentParser.hpp"
@@ -26,7 +27,7 @@ void ArgumentParser::print_help(void)
 {
     print_usage();
 
-    std::cerr << _description << "\n";
+    std::cerr << '\n' << _description << "\n\n";
 
     // print examples
     for (auto& example : _examples)
@@ -46,11 +47,41 @@ void ArgumentParser::print_help(void)
 
     std::cout << "\nOptional arguments:\n";
     for (Arg& arg : _arguments) {
+        const int offset = 8;  // the whitespace and the short option and the dashes take up this much width
+        std::string help = _get_wrapped_help(arg.get_help(), max + offset);
         std::string long_ = arg.get_option().name + (arg.get_option().has_arg ? ('=' + arg.get_metavar()) : "");
+
         std::cout
             << "  -" << (char)arg.get_option().val
             << ", --" << std::left << std::setw(max) << long_
-            << ' ' << arg.get_help() << '\n';
+            << help << '\n';
+    }
+}
+
+
+const std::string ArgumentParser::_get_wrapped_help(const std::string& help, int start)
+{
+    if (help.size() + 1 <= max_help_width)
+        return " " + help;
+    else {
+        const int max_width = max_help_width - start;
+
+        std::stringstream ss(help);
+        std::string s;
+        int current_width = 0;
+
+        std::string retval;
+
+        while (std::getline(ss, s, ' ')) {
+            int size = s.size() + 1;
+            if (current_width + size > max_width) {
+                retval += '\n' + std::string(start, ' ');
+                current_width = size;
+            }
+            retval += ' ' + s;
+            current_width += size;
+        }
+        return retval;
     }
 }
 

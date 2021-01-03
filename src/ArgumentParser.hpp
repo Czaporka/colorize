@@ -49,12 +49,14 @@ class ArgumentParser
 private:
     const int _argc;
     char** _argv;
+    const static int max_help_width = 79;
     std::vector<Arg> _arguments;
     std::string _description;
     std::vector<std::string> _examples;
     std::vector<option> _long_options;
 
     std::string _get_short_options(void);
+    const std::string _get_wrapped_help(const std::string&, int);
 
 public:
     ArgumentParser(int argc, char** argv);
