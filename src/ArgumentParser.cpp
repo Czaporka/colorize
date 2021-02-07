@@ -15,6 +15,18 @@ const std::string upper(const std::string& s)
 }
 
 
+Args::Args(const std::string& short_options) {
+    // initialize all flags to 0 so client doesn't have to check if flag is defined
+    for (const char& c : short_options)
+        switch (c) {
+        case ':':
+            break;
+        default:
+            flags[c] = 0;
+        }
+}
+
+
 ArgumentParser::ArgumentParser(int argc, char** argv) : _argc(argc), _argv(argv)
 {
     option opt = {"help", no_argument, NULL, 'h'};
@@ -37,10 +49,8 @@ void ArgumentParser::print_help(void)
     int max = 0;
     for (auto& arg: _arguments) {
         int size = strlen(arg.get_option().name);
-
         if (arg.get_option().has_arg)
             size = (size << 1) + 1;  // for options with args we append "=REPEATED_NAME"
-
         if (size > max)
             max = size;
     }
@@ -61,22 +71,21 @@ void ArgumentParser::print_help(void)
 
 const std::string ArgumentParser::_get_wrapped_help(const std::string& help, int start)
 {
-    if (help.size() + 1 <= max_help_width)
+    const int max_width = max_help_width - start;
+
+    if (static_cast<int>(help.size()) + 1 <= max_width)
         return " " + help;
     else {
-        const int max_width = max_help_width - start;
-
         std::stringstream ss(help);
         std::string s;
         int current_width = 0;
-
         std::string retval;
 
         while (std::getline(ss, s, ' ')) {
             int size = s.size() + 1;
             if (current_width + size > max_width) {
                 retval += '\n' + std::string(start, ' ');
-                current_width = size;
+                current_width = 0;
             }
             retval += ' ' + s;
             current_width += size;
@@ -154,7 +163,7 @@ Args ArgumentParser::parse_args()
     _long_options.push_back({0, 0, 0, 0});  // push the terminating entry
     const struct option* long_options = &_long_options[0];
 
-    Args args;
+    Args args(short_options);
 
     while (true) {
         int option_index = 0;

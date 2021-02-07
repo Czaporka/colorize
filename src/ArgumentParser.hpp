@@ -46,6 +46,8 @@ struct Args
     std::map<char, std::string> options;
 
     std::vector<std::string> positionals;
+
+    Args(const std::string&);
 };
 
 
