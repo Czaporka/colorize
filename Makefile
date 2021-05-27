@@ -38,6 +38,7 @@ else ifeq (${IMPL}, CXX)
 	VERSION_RELEASE := ${VERSION}-Cxx
 else ifeq (${IMPL}, both)
 	FLAGS_RELEASE += -DUSE_REGEX_H -DUSE_GLIBCXX_REGEX
+	SOURCES_RELEASE := ${SOURCES}
 	VERSION_RELEASE := ${VERSION}-C&Cxx
 else
 $(error Invalid value for IMPL: ${IMPL}. Valid values are: {C, CXX, both}.)
