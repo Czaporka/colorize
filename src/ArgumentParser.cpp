@@ -1,7 +1,6 @@
 #include <iomanip>
-#include <iostream>
-#include <sstream>
 #include <string.h>
+#include <sstream>
 
 #include "ArgumentParser.hpp"
 
@@ -15,23 +14,14 @@ const std::string upper(const std::string& s)
 }
 
 
-Args::Args(const std::string& short_options) {
-    // initialize all flags to 0 so client doesn't have to check if flag is defined
-    for (const char& c : short_options)
-        switch (c) {
-        case ':':
-            break;
-        default:
-            flags[c] = 0;
-        }
-}
-
-
-ArgumentParser::ArgumentParser(int argc, char** argv) : _argc(argc), _argv(argv)
+ArgumentParser::ArgumentParser(int argc, char** argv)
+    : _argc(argc),
+      _argv(argv)
 {
     option opt = {"help", no_argument, NULL, 'h'};
     _long_options.push_back(opt);
-    _arguments.push_back({opt, "show this help message and exit", ""});
+    _arguments.push_back({opt, "show this help message and exit", "", false});
+    _short_to_long.emplace('h', "help");
 }
 
 
@@ -42,15 +32,15 @@ void ArgumentParser::print_help(void)
     std::cout << '\n' << _description << "\n\n";
 
     // print examples
-    for (auto& example : _examples)
+    for (const auto& example : _examples)
         std::cout << "Example: " << example << "\n";
 
     // get the largest option name length
-    int max = 0;
-    for (auto& arg: _arguments) {
-        int size = strlen(arg.get_option().name);
+    size_t max = 0;
+    for (const auto& arg: _arguments) {
+        size_t size = strlen(arg.get_option().name);
         if (arg.get_option().has_arg)
-            size = (size << 1) + 1;  // for options with args we append "=REPEATED_NAME"
+            size = (size << 1) + 1;  // for options with args we append "=REPEATED_NAME"  // TODO: actually it's metavar?
         if (size > max)
             max = size;
     }
@@ -61,17 +51,21 @@ void ArgumentParser::print_help(void)
         std::string help = _get_wrapped_help(arg.get_help(), max + offset);
         std::string long_ = arg.get_option().name + (arg.get_option().has_arg ? ('=' + arg.get_metavar()) : "");
 
-        std::cout
-            << "  -" << (char)arg.get_option().val
-            << ", --" << std::left << std::setw(max) << long_
-            << help << '\n';
+        if (arg.is_long_only())
+            std::cout << "     ";
+        else
+            std::cout << "  -" << (char)arg.get_option().val << ",";
+        std::cout << " --" << std::left << std::setw(max) << long_ << help << '\n';
     }
+
+    if (_epilog != "")
+        std::cout << '\n' << _epilog;
 }
 
 
 const std::string ArgumentParser::_get_wrapped_help(const std::string& help, int start)
 {
-    const int max_width = max_help_width - start;
+    const int max_width = _max_help_width - start;
 
     if (static_cast<int>(help.size()) + 1 <= max_width)
         return " " + help;
@@ -95,37 +89,83 @@ const std::string ArgumentParser::_get_wrapped_help(const std::string& help, int
 }
 
 
-void ArgumentParser::print_usage(std::ostream& stream)
+void ArgumentParser::print_usage(std::ostream& os)
 {
-    stream << "Usage: " << _argv[0];
-    for (auto& arg : _arguments) {
-        stream << " [--" << arg.get_option().name << "|-" << (char)arg.get_option().val;
+    os << "Usage: " << _argv[0];
+    for (const auto& arg : _arguments) {
+        os << " [--" << arg.get_option().name;
+        if (!arg.is_long_only())
+            os << "|-" << (char)arg.get_option().val;
         if (arg.get_option().has_arg)
-            stream << ' ' << arg.get_metavar();
-        stream << ']';
+            os << ' ' << arg.get_metavar();
+        os << ']';
     }
-    stream << '\n';
+    os << '\n';
 }
 
 
+/**
+ * Add an argument that accepts only a long-style option.
+ *
+ * Set metavar to long option name converted to uppercase.
+ */
 void ArgumentParser::add_argument(
-    const char* long_, const char short_, const int argument_required, const std::string& help)
+    const char* long_, const int argument_required, const std::string& help)
+{
+    std::string metavar = argument_required ? upper(long_) : "";
+    add_argument(long_, argument_required, help, metavar);
+}
+
+
+/**
+ * Add an argument that accepts only a long-style option.
+ */
+void ArgumentParser::add_argument(
+    const char* long_, const int argument_required,
+    const std::string& help, const std::string& metavar)
+{
+    for (Arg& arg : _arguments)
+        if (arg.get_option().name == long_)
+            throw ArgumentError(std::string("argument --") + arg.get_option().name
+                                + ": conflicting with option --" + long_);
+    option opt = {long_, argument_required, NULL, _next_long_only_val};
+    LOG("opt = {" << long_ << ", " << argument_required << ", NULL, " << _next_long_only_val << "}");
+    _long_options.push_back(opt);
+    _arguments.push_back({opt, help, metavar, true});
+    _short_to_long.emplace(_next_long_only_val++, long_);
+}
+
+
+/**
+ * Add an argument that accepts both a short- and a long-style option.
+ *
+ * Set metavar to long option name converted to uppercase.
+ */
+void ArgumentParser::add_argument(
+    const char* long_, const char short_, const int argument_required,
+    const std::string& help)
 {
     std::string metavar = argument_required ? upper(long_) : "";
     add_argument(long_, short_, argument_required, help, metavar);
 }
 
 
+/**
+ * Add an argument that accepts both a short- and a long-style option.
+ */
 void ArgumentParser::add_argument(
-    const char* long_, const char short_, const int argument_required, const std::string& help, const std::string& metavar)
+    const char* long_, const char short_, const int argument_required,
+    const std::string& help, const std::string& metavar)
 {
     for (Arg& arg : _arguments)
         if (arg.get_option().name == long_ || arg.get_option().val == short_)
             throw ArgumentError(std::string("argument --") + arg.get_option().name
                                 + ": conflicting with option --" + long_);
     option opt = {long_, argument_required, NULL, short_};
+    LOG("opt = {" << long_ << ", " << argument_required << ", NULL, " << short_ << "}");
     _long_options.push_back(opt);
-    _arguments.push_back({opt, help, metavar});
+    _arguments.push_back({opt, help, metavar, false});
+    _short_to_long.emplace(short_, long_);
 }
 
 
@@ -135,9 +175,18 @@ void ArgumentParser::add_description(const std::string& description)
 }
 
 
+/**
+ * Add an example to be displayed as part of the help message.
+ */
 void ArgumentParser::add_example(const std::string& example)
 {
     _examples.push_back(example);
+}
+
+
+void ArgumentParser::add_epilog(const std::string& epilog)
+{
+    _epilog = epilog;
 }
 
 
@@ -156,6 +205,8 @@ std::string ArgumentParser::_get_short_options(void)
 
 Args ArgumentParser::parse_args()
 {
+    LOG("...");
+
     opterr = 0;
 
     std::string short_options = _get_short_options();
@@ -163,7 +214,7 @@ Args ArgumentParser::parse_args()
     _long_options.push_back({0, 0, 0, 0});  // push the terminating entry
     const struct option* long_options = &_long_options[0];
 
-    Args args(short_options);
+    Args args(_long_options);
 
     while (true) {
         int option_index = 0;
@@ -188,9 +239,9 @@ Args ArgumentParser::parse_args()
         }
         default:
             if (optarg == NULL)
-                ++args.flags[c];
+                ++args.flags[_short_to_long[c]];
             else
-                args.options.emplace(c, optarg);
+                args.options.emplace(_short_to_long[c], optarg);
             break;
         }
     }
