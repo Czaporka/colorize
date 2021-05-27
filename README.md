@@ -9,21 +9,33 @@
 ![](docs/examples.jpeg)
 
 ## Installation
-### Step 1 opt. A) Pre-built executable
-You can download & install a pre-built executable (compiled on Ubuntu, confirmed to also work on Debian, may not work on other platforms):
+### Pre-built executable
+You can download & install a pre-built executable (compiled on Debian/Ubuntu, may not work on other platforms):
 ```bash
-curl --create-dirs -fLo ~/.local/bin/colorize https://github.com/Czaporka/colorize/releases/download/v1.3.0/colorize
+curl --create-dirs -fLo ~/.local/bin/colorize https://github.com/Czaporka/colorize/releases/download/v1.4.0/colorize
 chmod +x ~/.local/bin/colorize
 ```
-### Step 1 opt. B) Compiling sources
+### Compiling from sources
 If the pre-built binary doesn't work for you, you can try compiling from sources:
 ```bash
 git clone https://github.com/Czaporka/colorize.git
 cd colorize
 make install
 ```
-Compilation requires gcc version 4.9.0+ (with regex support).
-### Step 2) PATH
+#### Fun fact:
+The source code contains two alternative implementations of the method
+for finding words to colorize: one of them utilizes C++/`<regex>`, the
+other one utilizes C/`<regex.h>`. By default, the C one is enabled, as
+it should be more cross-platform. If you're feeling adventurous, you
+may try compiling with the C++ implementation enabled, or with both of
+them (in which case you may switch to the posix one by providing the
+`--posix` command line option to `colorize`):
+```bash
+make install IMPL=CXX   # compile & install with the C++ implementation enabled
+make install IMPL=both  # compile & install with both the C++ and the C implementations enabled
+```
+If you're using `gcc`, the C++ implementation requires version 4.9.0+ (with regex support).
+### PATH
 Make sure `~/.local/bin` is on your `PATH`, e.g.:
 ```bash
 export PATH=${PATH}:~/.local/bin
@@ -32,7 +44,7 @@ echo 'export PATH=${PATH}:~/.local/bin' >> ~/.bashrc
 
 ## Usage
 ```
-Usage: colorize [--help|-h] [--all|-a] [--embedded|-e] [--include|-i INCLUDE] [--print-regex|-p] [--regex|-r REGEX] [--salt|-s SALT] [--hex|-x]
+Usage: colorize [--help|-h] [--all|-a] [--embedded|-e] [--include|-i INCLUDE] [--print-regex|-p] [--regex|-r REGEX] [--salt|-s SALT] [--version|-V] [--hex|-x]
 
 Colorize text (by default just numerals).
 
@@ -56,6 +68,7 @@ Optional arguments:
                         -i are ignored
   -s, --salt=SALT       append a salt to every token before hashing,
                         effectively shuffling the colors
+  -V, --version         print version and exit
   -x, --hex             force catching hexadecimal digits even when not
                         prefixed with "0x"
 ```
