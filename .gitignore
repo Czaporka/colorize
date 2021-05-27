@@ -1,5 +1,6 @@
 .vscode/
 target/
 *.xcf
-test/lib/
+tests/lib/
 build/
+__pycache__/
