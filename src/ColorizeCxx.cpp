@@ -19,9 +19,3 @@ void ColorizeCxx::colorize(const std::string& s) const
     }
     _os << std::endl;
 }
-
-
-void operator<<(const ColorizeCxx& colorize, std::string& s)
-{
-    colorize.colorize(s);
-}

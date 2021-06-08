@@ -12,7 +12,7 @@ class ColorizePosix : public Colorize
 public:
     ColorizePosix(const std::string&, const std::string&, std::ostream&);
 
-    void colorize(const std::string&) const;
+    void colorize(const std::string&) const override;
 
 private:
     regex_t _regex;
