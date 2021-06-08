@@ -4,20 +4,29 @@ env:
 on:
   push:
     branches: ["**"]
+
   pull_request:
     branches: ["**"]
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: make test
+
+      - name: Run tests with coverage
         run: make test
-      - name: make release
+
+      - name: Upload coverage data to Codecov
+        uses: codecov/codecov-action@v1
+        with:
+          fail_ci_if_error: true
+          token: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: Build the release binary
         run: make release
-      - name: list artifacts
-        run: find target/ -type f
-      - name: upload artifact
+
+      - name: Upload the binary as artifact
         uses: actions/upload-artifact@v1
         with:
           name: ${{ env.app_name }}

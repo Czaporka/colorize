@@ -7,12 +7,10 @@
 
 #ifdef USE_REGEX_H
 #  include "ColorizePosix.hpp"
-#  define WITH_C "w/C"
 #endif
 
 #ifdef USE_GLIBCXX_REGEX
 #  include "ColorizeCxx.hpp"
-#  define WITH_CXX "w/Cxx"
 #endif
 
 

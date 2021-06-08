@@ -1,6 +1,6 @@
-![](https://github.com/Czaporka/colorize/workflows/build/badge.svg)
-
 # colorize
+[![build](https://github.com/Czaporka/colorize/workflows/build/badge.svg)](https://github.com/Czaporka/colorize/actions)
+[![codecov](https://codecov.io/gh/Czaporka/colorize/branch/master/graph/badge.svg)](https://codecov.io/gh/Czaporka/colorize)
 
 ## Description
 `colorize` is a simple utility that employs color-coding in order to aid humans in parsing console output that contains a lot of similarly-looking words, especially numerals.

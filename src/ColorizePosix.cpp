@@ -36,7 +36,7 @@ ColorizePosix::ColorizePosix(const std::string& sregex,
 {
     LOG("...");
     const int flags = REG_EXTENDED | REG_ICASE;
-    int retval = regcomp(&_regex, sregex.c_str(), flags);
+    const int retval = regcomp(&_regex, sregex.c_str(), flags);
     LOG("retval: " << retval);
     if (retval) {
         LOG("regex: \"" << sregex << "\"");
@@ -48,10 +48,4 @@ ColorizePosix::ColorizePosix(const std::string& sregex,
 
         exit(EXIT_FAILURE);
     }
-}
-
-
-void operator<<(const ColorizePosix& colorize, std::string& s)
-{
-    colorize.colorize(s);
 }

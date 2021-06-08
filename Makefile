@@ -20,7 +20,7 @@ PREFIX ?= ~/.local
 INSTALLDIR := ${DESTDIR}${PREFIX}/bin/
 
 CXXFLAGS += -Wall -Wextra -pedantic -std=c++11
-FLAGS_DEBUG   := -O0 -g -DDEBUG -DUSE_REGEX_H -DUSE_GLIBCXX_REGEX
+FLAGS_DEBUG   := -O0 -g -DDEBUG -DUSE_REGEX_H -DUSE_GLIBCXX_REGEX --coverage
 FLAGS_RELEASE := -O3
 
 HEADERS := $(shell find src/ -type f -name '*.hpp')
@@ -72,6 +72,13 @@ debug: target/debug/${APP_NAME}
 .PHONY: release
 release: target/release/${APP_NAME}
 
+.PHONY: coverage
+coverage: test
+	rm -rf gcov/ lcov/ html/
+	mkdir gcov/ && cd gcov/ && gcov -o ../build/debug/ ../src/*.cpp
+	mkdir lcov/ && cd lcov/ && lcov --capture --directory .. --output-file coverage.info
+	mkdir html/ && cd html/ && genhtml ../lcov/coverage.info
+
 .PHONY: test
 test: test-unit test-e2e
 
@@ -100,6 +107,12 @@ uninstall:
 
 .PHONY: clean
 clean:
+#   no `rm -rf` here, to avoid deleting build/tests/lib/
+	find build/ -maxdepth 2 -type f -delete -print
+	find target/ -type f -delete -print
+
+.PHONY: clean-all
+clean-all:
 	rm -rf target/ build/
 
 # ======================================================
