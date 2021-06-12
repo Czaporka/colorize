@@ -10,7 +10,7 @@
 class ColorizePosix : public Colorize
 {
 public:
-    ColorizePosix(const std::string&, const std::string&, std::ostream&);
+    ColorizePosix(const std::string&, std::ostream&, const std::string&, bool);
 
     void colorize(const std::string&) const override;
 

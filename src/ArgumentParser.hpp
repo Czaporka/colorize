@@ -2,7 +2,7 @@
 #define ARGUMENTPARSER_H
 
 #include <getopt.h>
-#include <map>
+#include <unordered_map>
 #include <string>
 #include <vector>
 
@@ -54,7 +54,7 @@ private:
     std::string _description;
     std::vector<std::string> _examples;
     std::vector<option> _long_options;
-    std::map<int, std::string> _short_to_long;
+    std::unordered_map<int, std::string> _short_to_long;
     std::string _epilog = "";
 
     std::string _get_short_options(void);

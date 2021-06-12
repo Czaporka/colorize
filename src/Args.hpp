@@ -3,17 +3,17 @@
 
 #include <getopt.h>
 #include <iostream>
-#include <map>
+#include <unordered_map>
 #include <vector>
 
 
 struct Args
 {
     // flag long name -> number of occurrences
-    std::map<std::string, int> flags;
+    std::unordered_map<std::string, int> flags;
 
-    // this could be a multimap if we want to handle situations like `grep -e ... -e ...`
-    std::map<std::string, std::string> options;
+    // this could be a multimap if we wanted to handle situations like `grep -e ... -e ...`
+    std::unordered_map<std::string, std::string> options;
     std::vector<std::string> positionals;
 
     Args(const std::vector<option>&);

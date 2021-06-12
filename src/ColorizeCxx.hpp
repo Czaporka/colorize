@@ -9,8 +9,9 @@
 class ColorizeCxx : public Colorize
 {
 public:
-    ColorizeCxx(const std::string& sregex, const std::string& salt, std::ostream& os)
-        : Colorize(sregex, salt, os),
+    ColorizeCxx(const std::string& sregex, std::ostream& os,
+                const std::string& salt, bool ignore_case)
+        : Colorize(sregex, os, salt, ignore_case),
           _regex(std::regex(sregex, std::regex::icase)) { }
 
     void colorize(const std::string&) const override;

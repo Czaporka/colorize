@@ -30,9 +30,9 @@ void ColorizePosix::colorize(const std::string& s) const
 }
 
 
-ColorizePosix::ColorizePosix(const std::string& sregex,
-                             const std::string& salt, std::ostream& os)
-    : Colorize(sregex, salt, os)
+ColorizePosix::ColorizePosix(const std::string& sregex, std::ostream& os,
+                             const std::string& salt, bool ignore_case)
+    : Colorize(sregex, os, salt, ignore_case)
 {
     LOG("...");
     const int flags = REG_EXTENDED | REG_ICASE;

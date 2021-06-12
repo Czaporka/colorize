@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <iostream>
 #include <map>
 #include <set>
@@ -7,14 +8,37 @@
 
 int Colorize::_get_color(const std::string& s) const
 {
-    size_t hash = std::hash<std::string>{}(s + _salt);
+    std::string lower;
+    size_t hash;
+
+    // handle special tokens such as True, False, Null
+    lower = std::string(s);
+    std::transform(s.begin(), s.end(), lower.begin(),
+                   [](unsigned char c){ return std::tolower(c); });
+    hash = std::hash<std::string>{}(lower + _salt);
+    auto tmp = _special_tokens.find(hash);
+    if (tmp != _special_tokens.end())
+        return tmp->second;
+
+    if (!_ignore_case)
+        hash = std::hash<std::string>{}(s + _salt);
+
     return COLORS[hash % COLORS_SIZE];
+}
+
+
+const std::unordered_map<size_t, int> Colorize::_get_special_tokens(std::string salt)
+{
+    std::unordered_map<size_t, int> m;
+    for (auto &p : SPECIAL_TOKENS)
+        m.emplace(std::hash<std::string>{}(p.first + salt), p.second);
+    return m;
 }
 
 
 bool Colorize::_is_worth_colorizing(const std::string& s)
 {
-    // avoid colorizing dots that are not part of a number
+    // avoid colorizing punctuation characters that are not part of a word
     for (const char& c : s)
         if (isalnum(c))
             return true;
@@ -59,7 +83,7 @@ std::string Colorize::_sanitize(const std::string& chars)
 
 
 const std::string Colorize::make_regex(
-    const std::string& custom_regex, const std::string& include,
+    const std::string& custom_regex, const std::string& comprise,
     const bool embedded, const bool all, const bool hex)
 {
     LOG("...");
@@ -68,21 +92,24 @@ const std::string Colorize::make_regex(
         return custom_regex;
     else {
         // what custom characters do we want to include in the character class?
-        const std::string& include2 = _sanitize(include);
+        const std::string& comprise2 = _sanitize(comprise);
 
         // do we want word boundaries and hexadecimal digits?
         const std::string& boundary = embedded ? "" : "\\b";
 
         // do we want just numbers or all words?
         if (all)
-            return boundary + "[0-9.a-z_" + include2 + "]+" + boundary;
+            return boundary + "[0-9.a-z_" + comprise2 + "]+" + boundary;
         else {
             if (hex)
-                return boundary + "(0[xob])?[0-9.a-f" + include2 + "]+" + boundary;
+                return boundary + "(0[xob])?[0-9.a-f" + comprise2 + "]+" + boundary;
             else {
-                const std::string& hex = boundary + "(0[xob])[0-9.a-f" + include2 + "]+" + boundary;
-                const std::string& dec = boundary + "[0-9."              + include2 + "]+" + boundary;
-                return hex + "|" + dec;
+                const std::string& hex = boundary + "(0[xob])[0-9.a-f" + comprise2 + "]+" + boundary;
+                const std::string& dec = boundary + "[0-9."            + comprise2 + "]+" + boundary;
+                std::string s = hex + '|' + dec;
+                for (auto &p : SPECIAL_TOKENS)
+                    s += '|' + p.first;
+                return s;
             }
         }
     }

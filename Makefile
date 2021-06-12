@@ -3,7 +3,7 @@
 # ------------------------------------------------------
 # |- common --------------------------------------------
 APP_NAME := colorize
-VERSION := 1.4.0-$(shell git rev-parse --short HEAD)
+VERSION := $(shell git describe --tags)
 
 # Switch between implementations for release target.
 # Available options are:

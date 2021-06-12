@@ -4,3 +4,6 @@ target/
 tests/lib/
 build/
 __pycache__/
+html/
+lcov/
+gcov/

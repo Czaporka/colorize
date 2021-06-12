@@ -40,7 +40,8 @@ void ArgumentParser::print_help(void)
     for (const auto& arg: _arguments) {
         size_t size = strlen(arg.get_option().name);
         if (arg.get_option().has_arg)
-            size = (size << 1) + 1;  // for options with args we append "=REPEATED_NAME"  // TODO: actually it's metavar?
+            // for options with args we append "=METAVAR"
+            size += arg.get_metavar().size() + 1;
         if (size > max)
             max = size;
     }

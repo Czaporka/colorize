@@ -22,23 +22,25 @@ int main(int argc, char** argv)
     parser.add_example(std::string(argv[0]) + " -a < file.txt");
     parser.add_argument("all", 'a', no_argument,
                         "colorize all words, not just numerals");
+    parser.add_argument("comprise", 'c', required_argument,
+                        "specify additional characters to be interpreted as"
+                        " part of the same token; for example, use --comprise=,:"
+                        " for text containing numbers with comma for decimal"
+                        " separator (e.g. 3,141) and timestamps such as"
+                        " 23:59:59", "CHARS");
     parser.add_argument("embedded", 'e', no_argument,
                         "also catch numbers embedded within larger, not purely"
                         " numerical strings, e.g. in \"Word01\", \"01\" will be"
-                        " colorized (normally it wouldn't)");
-    parser.add_argument("include", 'i', required_argument,
-                        "specify additional characters to be interpreted as"
-                        " part of the same token; for example, use --include=,:"
-                        " for text containing numbers with comma for decimal"
-                        " separator (e.g. 3,141) and timestamps such as"
-                        " 23:59:59");
+                        " colorized (normally it would not)");
+    parser.add_argument("ignore-case", 'i', no_argument, "make sure \"token\","
+                        " \"TOKEN\", \"ToKeN\", etc., are the same color");
     parser.add_argument("print-regex", 'p', no_argument,
                         "print the final regex to STDERR; this can be used to"
                         " fine-tune the regex manually, then provide the result"
                         " with the --regex option");
     parser.add_argument("regex", 'r', required_argument,
                         "use an arbitrary REGEX for finding the tokens; -a and"
-                        " -i are ignored");
+                        " -c are then ignored");
     parser.add_argument("salt", 's', required_argument,
                         "append a salt to every token before hashing,"
                         " effectively shuffling the colors");
@@ -64,25 +66,29 @@ int main(int argc, char** argv)
 
     Colorize* colorize = nullptr;
 
-    const std::string& s = colorize->make_regex(
+    const std::string& regex = colorize->make_regex(
         args.get_option("regex"),
-        args.get_option("include"),
+        args.get_option("comprise"),
         args.get_flag("embedded"),
         args.get_flag("all"),
         args.get_flag("hex")
     );
     if (args.flags["print-regex"])
-        std::cerr << s << "\n";
+        std::cerr << regex << "\n";
 
     #if defined(USE_REGEX_H) && defined(USE_GLIBCXX_REGEX)
     if (args.get_flag("posix"))
-        colorize = new ColorizePosix(s, args.options["salt"], std::cout);
+        colorize = new ColorizePosix(
+            regex, std::cout, args.get_option("salt"), args.get_flag("ignore-case"));
     else
-        colorize = new ColorizeCxx(s, args.options["salt"], std::cout);
+        colorize = new ColorizeCxx(
+            regex, std::cout, args.get_option("salt"), args.get_flag("ignore-case"));
     #elif defined(USE_REGEX_H)
-    colorize = new ColorizePosix(s, args.options["salt"], std::cout);
+    colorize = new ColorizePosix(
+        regex, std::cout, args.get_option("salt"), args.get_flag("ignore-case"));
     #elif defined(USE_GLIBCXX_REGEX)
-    colorize = new ColorizeCxx(s, args.options["salt"], std::cout);
+    colorize = new ColorizeCxx(
+        regex, std::cout, args.get_option("salt"), args.get_flag("ignore-case"));
     #endif
 
     while (!std::cin.eof()) {
