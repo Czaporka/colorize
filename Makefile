@@ -84,14 +84,14 @@ test: test-unit test-e2e
 
 .PHONY: test-unit
 test-unit: target/${APP_NAME}-tests
-	$^
+	$^ --verbosity=high
 
 .PHONY: test-e2e
 test-e2e: target/debug/${APP_NAME}
 	if command -v pytest >/dev/null; then \
-		DUT_PATH=$< pytest -vvv tests/; \
+		DUT_PATH=$< pytest -vvv tests/e2e/; \
 	else \
-		DUT_PATH=$< python -m unittest discover -v -s tests/; \
+		DUT_PATH=$< python -m unittest discover -v -s tests/e2e/; \
 	fi
 
 .PHONY: install
@@ -109,11 +109,13 @@ uninstall:
 clean:
 #   no `rm -rf` here, to avoid deleting build/tests/lib/
 	find build/ -maxdepth 2 -type f -delete -print
-	find target/ -type f -delete -print
+	find . -type f -name '*.gcno' -delete -print
+	find . -type f -name '*.gcda' -delete -print
+	rm -rf target/ gcov/ lcov/ html/
 
 .PHONY: clean-all
-clean-all:
-	rm -rf target/ build/
+clean-all: clean
+	rm -rf target/ gcov/ lcov/ html/ build/
 
 # ======================================================
 # | Objects

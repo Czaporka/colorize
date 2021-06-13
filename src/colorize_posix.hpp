@@ -4,7 +4,7 @@
 #include <regex.h>
 #include <sys/types.h>
 
-#include "Colorize.hpp"
+#include "colorize.hpp"
 
 
 class ColorizePosix : public Colorize

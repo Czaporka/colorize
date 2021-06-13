@@ -7,3 +7,5 @@ __pycache__/
 html/
 lcov/
 gcov/
+**/*.gcda
+**/*.gcno

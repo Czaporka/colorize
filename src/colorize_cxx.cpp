@@ -1,4 +1,4 @@
-#include "ColorizeCxx.hpp"
+#include "colorize_cxx.hpp"
 
 
 void ColorizeCxx::colorize(const std::string& s) const

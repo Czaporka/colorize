@@ -2,7 +2,7 @@
 #include <string.h>
 #include <sstream>
 
-#include "ArgumentParser.hpp"
+#include "argument_parser.hpp"
 
 
 const std::string upper(const std::string& s)
@@ -14,7 +14,7 @@ const std::string upper(const std::string& s)
 }
 
 
-ArgumentParser::ArgumentParser(int argc, char** argv)
+ArgumentParser::ArgumentParser(const int argc, char** argv)
     : _argc(argc),
       _argv(argv)
 {
@@ -25,15 +25,15 @@ ArgumentParser::ArgumentParser(int argc, char** argv)
 }
 
 
-void ArgumentParser::print_help(void)
+void ArgumentParser::print_help(std::ostream& os)
 {
-    print_usage(std::cout);
+    print_usage(os);
 
-    std::cout << '\n' << _description << "\n\n";
+    os << '\n' << _description << "\n\n";
 
     // print examples
     for (const auto& example : _examples)
-        std::cout << "Example: " << example << "\n";
+        os << "Example: " << example << "\n";
 
     // get the largest option name length
     size_t max = 0;
@@ -46,21 +46,21 @@ void ArgumentParser::print_help(void)
             max = size;
     }
 
-    std::cout << "\nOptional arguments:\n";
+    os << "\nOptional arguments:\n";
     for (Arg& arg : _arguments) {
         const int offset = 8;  // the whitespace and the short option and the dashes take up this much width
         std::string help = _get_wrapped_help(arg.get_help(), max + offset);
         std::string long_ = arg.get_option().name + (arg.get_option().has_arg ? ('=' + arg.get_metavar()) : "");
 
         if (arg.is_long_only())
-            std::cout << "     ";
+            os << "     ";
         else
-            std::cout << "  -" << (char)arg.get_option().val << ",";
-        std::cout << " --" << std::left << std::setw(max) << long_ << help << '\n';
+            os << "  -" << (char)arg.get_option().val << ",";
+        os << " --" << std::left << std::setw(max) << long_ << help << '\n';
     }
 
     if (_epilog != "")
-        std::cout << '\n' << _epilog;
+        os << '\n' << _epilog << '\n';
 }
 
 
@@ -215,7 +215,7 @@ Args ArgumentParser::parse_args()
     _long_options.push_back({0, 0, 0, 0});  // push the terminating entry
     const struct option* long_options = &_long_options[0];
 
-    Args args(_long_options);
+    Args::Builder builder(_long_options);
 
     while (true) {
         int option_index = 0;
@@ -232,23 +232,34 @@ Args ArgumentParser::parse_args()
                 ? std::string("option requires an argument -- '") + _argv[optind-1] + "'"
                 : std::string("unrecognized option: '") + _argv[optind-1] + "'";
             // throw ArgumentError(msg);
-            std::cerr << _argv[0] << ": error: " << msg << "\n";
+            std::cerr << _argv[0] << ": error: " << msg << '\n';
             print_usage(std::cerr);
             std::cerr << "Try '" << _argv[0] << " --help' for more information.\n";
             std::exit(EXIT_FAILURE);
             break;
         }
         default:
-            if (optarg == NULL)
-                ++args.flags[_short_to_long[c]];
-            else
-                args.options.emplace(_short_to_long[c], optarg);
+            if (optarg == NULL) {
+                LOG("adding flag (optarg=NULL)");
+                builder.add_flag(_short_to_long[c]);
+            } else {
+                LOG("adding option (optarg=" << optarg << ")");
+                builder.add_option(_short_to_long[c], optarg);
+            }
             break;
         }
     }
     if (optind < _argc) {
-        while (optind < _argc)
-            args.positionals.push_back(_argv[optind++]);
+        while (optind < _argc) {
+            LOG("adding positional (" << _argv[optind] << ")");
+            builder.add_positional(_argv[optind++]);
+        }
     }
-    return args;
+
+    // "Reset" the state so that later we can try to do another parsing.
+    // This may not work on all platforms, but outside of testing scenarios,
+    //   it typically doesn't make sense to parse arguments more than once.
+    optind = 1;
+
+    return builder.build();
 }
