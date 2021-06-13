@@ -1,16 +1,17 @@
-#include "ArgumentParser.hpp"
-#include "Colorize.hpp"
+#include "argument_parser.hpp"
+#include "colorize.hpp"
+
 
 #if !defined(USE_REGEX_H) && !defined(USE_GLIBCXX_REGEX)
 #  error: USE_REGEX_H or USE_GLIBCXX_REGEX has to be defined.
 #endif
 
 #ifdef USE_REGEX_H
-#  include "ColorizePosix.hpp"
+#  include "colorize_posix.hpp"
 #endif
 
 #ifdef USE_GLIBCXX_REGEX
-#  include "ColorizeCxx.hpp"
+#  include "colorize_cxx.hpp"
 #endif
 
 
@@ -54,12 +55,12 @@ int main(int argc, char** argv)
     #endif
     parser.add_epilog(
         "Homepage: https://github.com/Czaporka/colorize\n"
-        "Version: " VERSION "\n"
+        "Version: " VERSION
     );
     Args args = parser.parse_args();
     LOG("args: " << args);
 
-    if (args.flags["version"]) {
+    if (args.get_flag("version")) {
         std::cout << "colorize version " VERSION << "\n";
         std::exit(EXIT_SUCCESS);
     }
@@ -73,7 +74,7 @@ int main(int argc, char** argv)
         args.get_flag("all"),
         args.get_flag("hex")
     );
-    if (args.flags["print-regex"])
+    if (args.get_flag("print-regex"))
         std::cerr << regex << "\n";
 
     #if defined(USE_REGEX_H) && defined(USE_GLIBCXX_REGEX)

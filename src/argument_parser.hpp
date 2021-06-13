@@ -6,7 +6,7 @@
 #include <string>
 #include <vector>
 
-#include "Args.hpp"
+#include "args.hpp"
 #include "utils.hpp"
 
 
@@ -61,8 +61,9 @@ private:
     const std::string _get_wrapped_help(const std::string&, int);
 
 public:
-    ArgumentParser(int argc, char** argv);
-    void print_help(void);
+    ArgumentParser(const int argc, char** argv);
+    void print_help(void) { print_help(std::cerr); }
+    void print_help(std::ostream&);
     void print_usage(std::ostream&);
     void add_argument(const char* long_, const int argument_required, const std::string& help);
     void add_argument(const char* long_, const int argument_required, const std::string& help, const std::string& metavar);

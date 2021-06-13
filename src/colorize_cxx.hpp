@@ -3,7 +3,7 @@
 
 #include <regex>
 
-#include "Colorize.hpp"
+#include "colorize.hpp"
 
 
 class ColorizeCxx : public Colorize

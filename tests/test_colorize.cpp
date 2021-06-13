@@ -1,11 +1,10 @@
-#define CATCH_CONFIG_MAIN
 #include "lib/catch2/catch_amalgamated.hpp"
 
-#include "../src/ColorizeCxx.hpp"
-#include "../src/ColorizePosix.hpp"
+#include "../src/colorize_cxx.hpp"
+#include "../src/colorize_posix.hpp"
 
 
-TEST_CASE("ColorizeCxx::colorize()", "[ColorizeCxx]")
+TEST_CASE("ColorizeCxx::colorize", "[ColorizeCxx]")
 {
     std::stringstream stream;
     const std::string& input = "A a 1\n";
@@ -18,7 +17,7 @@ TEST_CASE("ColorizeCxx::colorize()", "[ColorizeCxx]")
 }
 
 
-TEST_CASE("ColorizePosix::colorize()", "[ColorizePosix]")
+TEST_CASE("ColorizePosix::colorize", "[ColorizePosix]")
 {
     std::stringstream stream;
     const std::string& input = "A a 1\n";
@@ -31,7 +30,7 @@ TEST_CASE("ColorizePosix::colorize()", "[ColorizePosix]")
 }
 
 
-TEST_CASE("ColorizePosix::colorize() - true/false/null", "[ColorizePosix]")
+TEST_CASE("ColorizePosix::colorize - true/false/null", "[ColorizePosix]")
 {
     std::stringstream stream;
     const std::string& input = "True False FALSE tRuE NULL\n";

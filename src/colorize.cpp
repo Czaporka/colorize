@@ -3,7 +3,7 @@
 #include <map>
 #include <set>
 
-#include "Colorize.hpp"
+#include "colorize.hpp"
 
 
 int Colorize::_get_color(const std::string& s) const

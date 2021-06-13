@@ -1,4 +1,4 @@
-#include "ColorizePosix.hpp"
+#include "colorize_posix.hpp"
 
 
 void ColorizePosix::colorize(const std::string& s) const

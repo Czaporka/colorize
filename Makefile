@@ -28,13 +28,13 @@ SOURCES := $(shell find src/ -type f -name '*.cpp')
 
 ifeq (${IMPL}, C)
 	FLAGS_RELEASE += -DUSE_REGEX_H
-	HEADERS_RELEASE := $(filter-out src/ColorizeCxx.hpp, ${HEADERS})
-	SOURCES_RELEASE := $(filter-out src/ColorizeCxx.cpp, ${SOURCES})
+	HEADERS_RELEASE := $(filter-out src/colorize_cxx.hpp, ${HEADERS})
+	SOURCES_RELEASE := $(filter-out src/colorize_cxx.cpp, ${SOURCES})
 	VERSION_RELEASE := ${VERSION}-C
 else ifeq (${IMPL}, CXX)
 	FLAGS_RELEASE += -DUSE_GLIBCXX_REGEX
-	HEADERS_RELEASE := $(filter-out src/ColorizePosix.hpp, ${HEADERS})
-	SOURCES_RELEASE := $(filter-out src/ColorizePosix.cpp, ${SOURCES})
+	HEADERS_RELEASE := $(filter-out src/colorize_posix.hpp, ${HEADERS})
+	SOURCES_RELEASE := $(filter-out src/colorize_posix.cpp, ${SOURCES})
 	VERSION_RELEASE := ${VERSION}-Cxx
 else ifeq (${IMPL}, both)
 	FLAGS_RELEASE += -DUSE_REGEX_H -DUSE_GLIBCXX_REGEX
@@ -84,14 +84,14 @@ test: test-unit test-e2e
 
 .PHONY: test-unit
 test-unit: target/${APP_NAME}-tests
-	$^
+	$^ --verbosity=high
 
 .PHONY: test-e2e
 test-e2e: target/debug/${APP_NAME}
 	if command -v pytest >/dev/null; then \
-		DUT_PATH=$< pytest -vvv tests/; \
+		DUT_PATH=$< pytest -vvv tests/e2e/; \
 	else \
-		DUT_PATH=$< python -m unittest discover -v -s tests/; \
+		DUT_PATH=$< python -m unittest discover -v -s tests/e2e/; \
 	fi
 
 .PHONY: install
@@ -109,11 +109,13 @@ uninstall:
 clean:
 #   no `rm -rf` here, to avoid deleting build/tests/lib/
 	find build/ -maxdepth 2 -type f -delete -print
-	find target/ -type f -delete -print
+	find . -type f -name '*.gcno' -delete -print
+	find . -type f -name '*.gcda' -delete -print
+	rm -rf target/ gcov/ lcov/ html/
 
 .PHONY: clean-all
-clean-all:
-	rm -rf target/ build/
+clean-all: clean
+	rm -rf target/ gcov/ lcov/ html/ build/
 
 # ======================================================
 # | Objects
