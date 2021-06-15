@@ -108,7 +108,7 @@ const std::string Colorize::make_regex(
                 const std::string& dec = boundary + "[0-9."            + comprise2 + "]+" + boundary;
                 std::string s = hex + '|' + dec;
                 for (auto &p : SPECIAL_TOKENS)
-                    s += '|' + p.first;
+                    s += "|\\b" + p.first + "\\b";
                 return s;
             }
         }
