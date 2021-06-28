@@ -29,20 +29,20 @@
 #define COLOR_FALSE   C_RED
 #define COLOR_NEUTRAL C_BRIGHT_BLACK
 
-#define COLORS_SIZE 12
+#define COLORS_SIZE 8
 
 const static std::array<int, COLORS_SIZE> COLORS = {
     // C_BLACK,
-    C_RED,
-    C_GREEN,
+    //C_RED,
+    //C_GREEN,
     C_YELLOW,
     C_BLUE,
     C_MAGENTA,
     C_CYAN,
     // C_WHITE,
     // C_BRIGHT_BLACK,
-    C_BRIGHT_RED,
-    C_BRIGHT_GREEN,
+    //C_BRIGHT_RED,
+    //C_BRIGHT_GREEN,
     C_BRIGHT_YELLOW,
     C_BRIGHT_BLUE,
     C_BRIGHT_MAGENTA,
@@ -61,6 +61,7 @@ const static std::unordered_map<std::string, int> SPECIAL_TOKENS = {
     // ---- neutral ----
     {"null", COLOR_NEUTRAL},
     {"none", COLOR_NEUTRAL},
+    {"0", COLOR_NEUTRAL},
 };
 
 
